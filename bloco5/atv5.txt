@@ -1,0 +1,46 @@
+/*Tarefa 5.1 — Ranking de canal de venda e forma de pagamento
+Tarefa: Entre os pedidos aprovados, mostre canal_venda, forma_pagamento, quantidade de pedidos e faturamento,
+considerando apenas combinações com pelo menos 200 pedidos. Ordene pelo
+faturamento e mostre somente as 5 primeiras combinações.
+- Filtragem Inicial (WHERE): O banco de dados analisa a tabela bruta e seleciona apenas os
+registros com status igual a 'Aprovado', descartando todas as outras vendas.
+- Agrupamento Duplo (GROUP BY): Os dados filtrados são organizados em grupos únicos
+combinando duas colunas ao mesmo tempo: canal_venda e forma_pagamento.
+- Cálculo de Métricas (SELECT): Para cada grupo gerado, o sistema calcula a
+quantidade de pedidos (COUNT) e soma o valor total arrecadado (SUM).
+- Restrição do Grupo (HAVING): Ocorre um segundo filtro, eliminando da tela qualquer
+combinação de canal e pagamento que tenha acumulado menos de 200 pedidos.
+- Ordenação e Exibição (ORDER BY + LIMIT): O resultado final é ordenado do maior
+para o menor faturamento, exibindo estritamente as 5 combinações mais lucrativas.
+*/
+  SELECT
+  canal_venda,
+  forma_pagamento,
+  COUNT(*) AS pedidos_aprovados,
+  SUM(valor_total) AS faturamento
+  FROM pedidos
+  WHERE status = 'Aprovado'
+   GROUP BY canal_venda, forma_pagamento
+  HAVING COUNT(*) >= 200
+  ORDER BY faturamento DESC
+  LIMIT 5;
+
+  /*Tarefa 5.2 — Categorias "premium" do catálogo
+  Tarefa: Entre os produtos ativos, mostre categoria, quantidade de produtos e preço médio, apenas para
+  categorias cujo preço médio seja  superior a R$ 300, ordenado do maior para o menor preço médio.
+ 
+  Funcionamento - COUNT(*): Conta a quantidade de linhas (produtos) que pertencem a cada categoria através do agrupamento do GROUP BY.
+ - ROUND(AVG(preco), 2): Calcula a média aritmética dos preços dos produtos de cada grupo e arredonda o resultado para 2 casas decimais.
+ - WHERE ativo = 1: Aplica a condição inicial de filtrar e selecionar apenas os produtos que estão com o status ativo igual a 1.
+ - HAVING AVG(preco) > 300: Filtra as categorias após o agrupamento, exibindo apenas aquelas que possuem a média de preço maior que 300 reais.
+ - ORDER BY preco_medio DESC: Ordena a lista final mostrando os resultados do maior preço médio para o menor.
+  */
+  SELECT
+  categoria,
+ COUNT(*) AS quantidade_produtos,
+  ROUND(AVG(preco),2) AS preco_medio
+  FROM produtos
+  WHERE ativo = 1
+  GROUP BY categoria
+  HAVING AVG(preco) > 300
+  ORDER BY preco_medio DESC;

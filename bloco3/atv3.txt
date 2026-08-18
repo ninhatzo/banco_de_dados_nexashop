@@ -1,0 +1,100 @@
+/*TAREFA 3-1 -  Radar de ticket médio
+  Calcule, apenas para pedidos aprovados, a quantidade de pedidos, o ticket médio (arredondado em 2 casas), o menor e o maior valor.
+ 
+  Funcionamento - COUNT(id) IDs dos pedidos filtrados
+    ROUND(AVG(valor_total), 2) AS ticket_medio, vai somar e dividir por id tirar e tirar a média
+MIN(valor_total) AS menor_valor,  MAX(valor_total) AS maior_valor vai retirar o maior e menor valor
+    da tabela pedisos com a WHERE status = 'Aprovado'; a condição de ser os status - Aprovados
+   */
+   SELECT
+   COUNT(*) AS total_pedidos_aprovados,
+    COUNT(id) AS total_pedidos,
+    ROUND(AVG(valor_total), 2) AS ticket_medio,
+    MIN(valor_total) AS menor_valor,
+    MAX(valor_total) AS maior_valor
+FROM pedidos
+WHERE status = 'Aprovado';
+
+/*Tarefa 3.2 — Faturamento por forma de pagamento
+Tarefa: Calcule o faturamento total (SUM) de pedidos aprovados, agrupado por forma de pagamento,
+do maior para o menor
+
+Funcionamento - SELECT forma_pagamento, seleciona a forma_pagamento da tabela pedidos
+ROUND(SUM(valor_total), 2) AS faturamento_por_forma pra fazer a soma dos valores, forma_pagamento cartão de Crédito, pix etc..
+WHERE status = 'Aprovado' da codição Aprovado todos os valores Aprovados
+GROUP BY forma_pagamento, pega os grupos cartão de Crédito, pix etc..
+ ORDER BY faturamento_por_forma DESC ; ordema do maior valor pro menor valor
+*/
+
+SELECT forma_pagamento,
+ROUND(SUM(valor_total), 2) AS faturamento_por_forma
+FROM pedidos
+WHERE status = 'Aprovado'
+GROUP BY forma_pagamento
+ORDER BY faturamento_por_forma DESC ;
+
+/*Tarefa 3.3 — Onde estão os clientes da NexaShop
+Tarefa: Mostre a quantidade de clientes por estado, ordenando do estado com mais clientes para o
+com menos.
+
+Funcionamento - SELECT  estado, seleciona o campo do estado e conta o id de cada cliente
+COUNT(id) AS quantidade_cliente_estado
+FROM clientes da tebela clientes faz o filtro atráves do GROUP BY estado
+ORDER BY quantidade_cliente_estado DESC; e ordeno do maior para o menor
+*/
+SELECT  estado,
+COUNT(id) AS quantidade_cliente_estado
+FROM clientes
+GROUP BY estado
+ORDER BY quantidade_cliente_estado DESC;
+
+/*Tarefa 3.4 — Estados prioritários para expansão
+Tarefa: Liste apenas os estados com mais de 200 clientes cadastrados.
+
+Funcionamento -  SELECT  estado, seleciona o campo do estado e conta o id de cada cliente
+FROM clientes da tabela clientes
+GROUP BY estado fConsolida os registros individuais, unificando os estados repetidos (como SC, SP, RJ)
+em linhas exclusivas de resumo para que a contagem seja processada por localidade.
+HAVING COUNT(id) > 200 faz o filtro da contagem com maior de 200 clientes
+ORDER BY quantidade_cliente_estado DESC; e ordema do maior para o menor.
+*/
+SELECT
+    estado,
+    COUNT(id) AS quantidade_cliente_estado
+FROM clientes
+GROUP BY estado
+HAVING COUNT(id) > 200
+ORDER BY quantidade_cliente_estado DESC;
+
+/*Tarefa 3.5 — Perfil etário por segmento de cliente
+Tarefa: Calcule a idade média dos clientes (usando TIMESTAMPDIFF) agrupada por segmento (Varejo,
+Atacado, Corporativo).
+
+Funcionamento a expressão - (TIMESTAMPDIFF(YEAR, data_nascimento, CURDATE())) faz o calculo
+de idade de cada cliente pegando a data da idade cadastrada - (TIMESTAMPDIFF(YEAR, data_nascimento)-
+ com a data atual - CURDATE() -  e faz o calculo da idade 20, 35 48 etc.. AVG faz a média atraves desse
+ resultado eo ROUND, 1 - arredonda.
+*/
+SELECT
+    segmento,
+    ROUND(AVG(TIMESTAMPDIFF(YEAR, data_nascimento, CURDATE())), 1) AS idade_media
+FROM clientes
+GROUP BY segmento;
+
+/*Tarefa 3.6 — Valor de estoque parado por categoria
+Tarefa: Para produtos ativos, calcule o valor total em estoque (preço × estoque) por categoria,
+ordenado do maior para o menor
+
+Funcionameto começo selecionando a categoria para saber o valor total em estoque de cada categoria ,Informática, Eletrônicos,
+ROUND(2) para arrendondar as casas de depois SUM(preco * estoque) para fazer o cáculo
+preco estoque, WHERE ativo = 1 é a condição todos os ativos 1 com 0 não ignora
+GROUP BY categoria vai agrupar as categorias Informática, Eletrônicos etc..alter
+ORDER BY valor_estoque_parado DESC;  vai ordemar do maior para o menor valor.
+*/
+SELECT
+    categoria,
+    ROUND(SUM(preco * estoque), 2) AS valor_estoque_parado
+FROM produtos
+WHERE ativo = '1'
+GROUP BY categoria
+ORDER BY valor_estoque_parado DESC;
